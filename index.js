@@ -1,37 +1,51 @@
-angular.mock.http = {};
+(function(ng) {
 
-angular.mock.http.init = function() {
+	var version = ng.version,
+		major = version.major,
+		minor = version.minor,
+		dot = version.dot,
+		hasAsyncCallback = major <= 1 && minor <= 4 && dot < 3;
 
-  angular.module('ngMock', ['ng', 'ngMockE2E']).provider({
-    $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
-    $log: angular.mock.$LogProvider,
-    $interval: angular.mock.$IntervalProvider,
-    $rootElement: angular.mock.$RootElementProvider
-  }).config(['$provide', function($provide) {
-    $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
-    $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
-    $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
-    $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
-    $provide.decorator('$controller', angular.mock.$ControllerDecorator);
-  }]);
+	ng.mock.http = {
+		init: function() {
 
-};
+			ng.module('ngMock', ['ng', 'ngMockE2E']).provider({
+				$exceptionHandler: ng.mock.$ExceptionHandlerProvider,
+				$log: ng.mock.$LogProvider,
+				$interval: ng.mock.$IntervalProvider,
+				$rootElement: ng.mock.$RootElementProvider
+			}).config(['$provide', function($provide) {
+				if(hasAsyncCallback) {
+					$provide.decorator('$$asyncCallback', ng.mock.$AsyncCallbackDecorator);
+				}
+				$provide.decorator('$timeout', ng.mock.$TimeoutDecorator);
+				$provide.decorator('$$rAF', ng.mock.$RAFDecorator);
+				$provide.decorator('$rootScope', ng.mock.$RootScopeDecorator);
+				$provide.decorator('$controller', ng.mock.$ControllerDecorator);
+			}]);
 
-angular.mock.http.reset = function() {
+		},
 
-  angular.module('ngMock', ['ng']).provider({
-    $browser: angular.mock.$BrowserProvider,
-    $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
-    $log: angular.mock.$LogProvider,
-    $interval: angular.mock.$IntervalProvider,
-    $httpBackend: angular.mock.$HttpBackendProvider,
-    $rootElement: angular.mock.$RootElementProvider
-  }).config(['$provide', function($provide) {
-    $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
-    $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
-    $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
-    $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
-    $provide.decorator('$controller', angular.mock.$ControllerDecorator);
-  }]);
+		reset: function() {
 
-};
+			ng.module('ngMock', ['ng']).provider({
+				$browser: ng.mock.$BrowserProvider,
+				$exceptionHandler: ng.mock.$ExceptionHandlerProvider,
+				$log: ng.mock.$LogProvider,
+				$interval: ng.mock.$IntervalProvider,
+				$httpBackend: ng.mock.$HttpBackendProvider,
+				$rootElement: ng.mock.$RootElementProvider
+			}).config(['$provide', function($provide) {
+				if(hasAsyncCallback) {
+					$provide.decorator('$$asyncCallback', ng.mock.$AsyncCallbackDecorator);
+				}
+				$provide.decorator('$timeout', ng.mock.$TimeoutDecorator);
+				$provide.decorator('$$rAF', ng.mock.$RAFDecorator);
+				$provide.decorator('$rootScope', ng.mock.$RootScopeDecorator);
+				$provide.decorator('$controller', ng.mock.$ControllerDecorator);
+			}]);
+
+		}
+	};
+
+})(window.angular);
